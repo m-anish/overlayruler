@@ -1,10 +1,24 @@
-#!/usr/bin/python
 # coding: utf-8
+# overlayruler <http://github.com/m-anish/overlayruler>
+# Copyright 2018 Anish Mangal
 
+# This file is part of overlayruler.
+#
+# overlayruler is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the licence.
+#   
+# overlayruler is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+#
+# See COPYING for more details.
+
+import os
+import exiftool
 from PIL import Image
 from PIL import ImageDraw
 from PIL import ImageFont
-import exiftool
 
 
 def calculate_ruler(filename):
@@ -13,19 +27,20 @@ def calculate_ruler(filename):
         metadata = et.get_metadata_batch([filename])
 
     # Focus Distance in mm
-    Do = float(metadata[0]['MakerNotes:FocusDistance']) * 1000
+    focus_distance = float(metadata[0]['MakerNotes:FocusDistance']) * 1000
 
     # Focal length in mm
-    F = float(metadata[0]['EXIF:FocalLength'])
+    focal_length = float(metadata[0]['EXIF:FocalLength'])
 
     # Sensor height: Compute from the ratio between Focal Length and
     # 35mm-Equivalent Focal Length tags in mm
-    Hs = 24 * float(metadata[0]['EXIF:FocalLength']) /         float(metadata[0]['EXIF:FocalLengthIn35mmFormat'])
+    sensor_height = 24 * float(metadata[0]['EXIF:FocalLength']) /         float(metadata[0]['EXIF:FocalLengthIn35mmFormat'])
 
     # Vertical height of the frame in mm
-    Hr = ((Do * Hs) / F)
+    # See: https://photo.stackexchange.com/questions/12434/how-do-i-calculate-the-distance-of-an-object-in-a-photo
+    frame_height = ((focus_distance * sensor_height) / focal_length)
 
-    return Hr
+    return frame_height
 
 
 def overlay_ruler(filename):
@@ -54,7 +69,8 @@ def overlay_ruler(filename):
     draw = ImageDraw.Draw(image)
     draw.line((0, 0, 0, pixel_size), fill=0, width=tick_width)
 
-    font = ImageFont.truetype("FreeSans.ttf", int(pixel_size/15))
+    here = os.path.abspath(os.path.dirname(__file__))
+    font = ImageFont.truetype(os.path.join(here, 'fonts/FreeSans.ttf'), int(pixel_size/15))
     draw.text((tick_width*2, tick_width*2), "1 division = %d mm" %
               tick_scale_mm, (0, 0, 0), font=font)
 
