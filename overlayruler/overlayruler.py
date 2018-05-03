@@ -78,7 +78,7 @@ def overlay_ruler(filename):
         draw.line((0, tick*tick_skip, tick_length, tick*tick_skip),
                   fill=0, width=tick_width)
 
-    return image
+    return image, image.info['exif']
 
 
 import re
@@ -88,5 +88,6 @@ file = "/home/anish/_DSC0358.JPG"
 file_regex = re.compile(r"(.*\.)(jpg)", re.IGNORECASE)
 output_filename = re.sub(file_regex, r"\1overlay.\2", file)
 
-overlay_ruler(file).save(output_filename, 'JPEG', quality=90)
+image, exif = overlay_ruler(file)
+image.save(output_filename, 'JPEG', quality=90, exif=exif)
 
