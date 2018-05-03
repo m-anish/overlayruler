@@ -22,7 +22,7 @@ VERSION = None
 
 # What packages are required for this module to be executed?
 REQUIRED = [
-     'pillow', 'pyexiftool',
+     'pillow',
 ]
 
 here = os.path.abspath(os.path.dirname(__file__))
