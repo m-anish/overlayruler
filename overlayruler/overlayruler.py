@@ -74,8 +74,8 @@ def overlay_ruler(filename):
     draw.text((tick_width*2, tick_width*2), "1 division = %d mm" %
               tick_scale_mm, (0, 0, 0), font=font)
 
-    for i in range(0, ticks + 1):
-        draw.line((0, i*tick_skip, tick_length, i*tick_skip),
+    for tick in range(0, ticks + 1):
+        draw.line((0, tick*tick_skip, tick_length, tick*tick_skip),
                   fill=0, width=tick_width)
 
     return image
